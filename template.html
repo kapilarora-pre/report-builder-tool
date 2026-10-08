@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* Surfaces from the A3 Tech palette; the accent is Presight's own
+     green-teal-cyan-blue gradient, sampled from the ring on the "g". */
+  :root {
+    color-scheme: dark;
+    --bg:#030712; --paper:#040817; --raised:#060c22; --line:#1e293b;
+    --ink:#ffffff; --ink-2:#cbd5e1; --ink-3:#94a3b8;
+    --g-green:#6ec56a; --g-teal:#00a08a; --g-cyan:#0a85e0; --g-blue:#4f6bf0;
+    --brand:linear-gradient(120deg,var(--g-green) 0%,var(--g-teal) 34%,var(--g-cyan) 68%,var(--g-blue) 100%);
+    --pass:#34d399; --warn:#fbbf24; --fail:#fb7185;
+    --pass-bg:rgb(16 185 129 / .16); --warn-bg:rgb(251 191 36 / .16); --fail-bg:rgb(159 18 57 / .26);
+    --shadow:0 2px 6px rgb(0 0 0 / .45), 0 18px 40px -22px rgb(0 0 0 / .85);
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --display:'Space Grotesk','Plus Jakarta Sans',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 600px at 78% -8%, rgb(56 189 248 / .07), transparent 62%),
+      radial-gradient(800px 500px at 8% 4%, rgb(99 102 241 / .06), transparent 60%),
+      var(--bg);
+    background-attachment:fixed;}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px 80px}
+
+  .masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:38px 0 18px}
+  .logo{height:32px;filter:brightness(2.05) contrast(.9)}
+  .doc-type{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);text-align:right}
+  .rule{height:3px;border-radius:2px;background:var(--brand)}
+
+  header.title{padding:28px 0 26px}
+  h1{font-family:var(--display);font-size:clamp(1.5rem,3.6vw,2.1rem);font-weight:600;line-height:1.2;letter-spacing:-.015em;margin:0 0 12px}
+  .meta{display:flex;flex-wrap:wrap;gap:5px 20px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .meta b{color:var(--ink-2);font-weight:500}
+
+  h2{font-family:var(--display);font-size:1.05rem;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
+  h2::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--brand);flex:none}
+  h3{font-family:var(--display);font-size:.92rem;font-weight:600;margin:22px 0 8px}
+  section{margin-top:30px}
+  .lead{margin:6px 0 14px 14px;color:var(--ink-3);font-size:13px}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);padding:20px 22px}
+  .card+.card{margin-top:12px}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2)}
+  tr:last-child td{border-bottom:0}
+  td strong{color:var(--ink)}
+  td.num{font-family:var(--mono);white-space:nowrap;color:var(--ink)}
+
+  .tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.06em;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .t-pass{background:var(--pass-bg);color:var(--pass)} .t-warn{background:var(--warn-bg);color:var(--warn)} .t-fail{background:var(--fail-bg);color:var(--fail)}
+
+  .headline{display:grid;grid-template-columns:185px 1fr;gap:28px;align-items:center}
+  @media (max-width:720px){.headline{grid-template-columns:1fr;justify-items:center;text-align:center}}
+  .gauge{position:relative;width:170px;height:170px;margin:0}
+  .gauge figcaption{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:3px}
+  .gauge .pct{font-family:var(--display);font-size:1.9rem;font-weight:600;letter-spacing:-.03em;line-height:1}
+  .gauge .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+  @media (max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{border:1px solid var(--line);border-radius:11px;padding:13px 15px;background:var(--raised)}
+  .stat .n{font-family:var(--display);font-size:1.45rem;font-weight:600;line-height:1.15;letter-spacing:-.03em}
+  .stat .k{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+  .stat.ok .n{color:var(--pass)} .stat.bad .n{color:var(--fail)} .stat.mid .n{color:var(--warn)}
+
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:720px){.charts{grid-template-columns:1fr}}
+  .chart{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .pie-n{font-family:var(--display);font-size:17px;font-weight:600;fill:var(--ink)}
+  .pie-l{font-family:var(--mono);font-size:6.5px;letter-spacing:.14em;text-transform:uppercase;fill:var(--ink-3)}
+  ul.legend{list-style:none;margin:0;padding:0;font-size:12.5px;min-width:170px}
+  ul.legend li{display:flex;align-items:center;gap:8px;margin-bottom:6px;color:var(--ink-2)}
+  ul.legend .sw{width:10px;height:10px;border-radius:3px;flex:none}
+  ul.legend b{margin-left:auto;font-family:var(--mono);color:var(--ink);font-weight:500}
+  ul.legend i{font-family:var(--mono);font-style:normal;color:var(--ink-3);width:44px;text-align:right}
+
+  .bars{display:grid;gap:14px;margin-top:4px}
+  .bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+  .bar-name{font-size:13.5px;font-weight:500}
+  .bar-fig{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .track{height:9px;border-radius:999px;background:var(--line);overflow:hidden;display:flex}
+  .seg-pass{height:100%;background:var(--brand);background-size:700px 100%}
+  .seg-fail{height:100%;background:var(--fail)}
+
+  ul.read{margin:8px 0 0;padding-left:19px}
+  ul.read li{margin-bottom:7px;font-size:13.5px;color:var(--ink-2)}
+  ul.read li strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:12px;background:var(--raised);padding:1px 5px;border-radius:4px;color:var(--ink)}
+
+  .callout{border-left:3px solid var(--g-cyan);background:rgb(10 133 224 / .09);padding:13px 16px;border-radius:0 9px 9px 0;margin-top:12px;font-size:13.5px;color:var(--ink-2)}
+  .callout.risk{border-left-color:var(--fail);background:rgb(159 18 57 / .16)}
+  .callout strong{color:var(--ink)}
+
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <img class="logo" src="__LOGO__" alt="Presight — A G42 company" />
+    <div class="doc-type">__DOC_TYPE__</div>
+  </div>
+  <div class="rule"></div>
+
+  <header class="title">
+    <h1>__TITLE__</h1>
+    <div class="meta">
+      <span><b>Period</b> __PERIOD__</span>
+      <span><b>Environment</b> __ENV__</span>
+      <span><b>Prepared by</b> __PREPARED_BY__</span>
+      <span><b>Status</b> __STATUS__</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>1. Executive summary</h2>
+    <div class="card headline">
+__GAUGE__
+      <div class="stats">
+        <div class="stat"><div class="n">__TOTAL__</div><div class="k">Instances validated</div></div>
+        <div class="stat ok"><div class="n">__PASSED__</div><div class="k">Passed</div></div>
+        <div class="stat bad"><div class="n">__URGENT__</div><div class="k">__URGENT_LABEL__</div></div>
+        <div class="stat mid"><div class="n">__OPEN__</div><div class="k">Defects still open</div></div>
+      </div>
+    </div>
+    __SUMMARY_CALLOUT__
+  </section>
+
+__DEFECT_SECTION__
+
+  <section>
+    <h2>3. Coverage by report type</h2>
+    <p class="lead">Bar length is share of all validated instances.</p>
+    <div class="card">
+      <div class="bars">
+__COVERAGE_BARS__
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Defects — findings and status</h2>
+__DEFECT_TABLES__
+  </section>
+
+__SECTIONS__
+
+  <footer>
+    <span>__FOOTER__</span>
+    <span>Presight — A G42 company</span>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "title": "MoFT Reporting Solution — Testing & Validation Report",
+    "doc_type": "Quality Assurance · Testing & Validation Report",
+    "period": "1–4 October 2026",
+    "environment": "Dev",
+    "prepared_by": "QA, Presight",
+    "status": "Draft for internal review",
+    "footer_note": "Compiled from QA status reports 1–4 October 2026 · Dev environment · Draft for internal review before client distribution"
+  },
+
+  "summary_callout": "<strong>The largest single contributor to the client's experience is not a report defect.</strong> The database refresh is not running as expected, so the client environment can serve figures that lag the source. Reports computed correctly from stale inputs appear wrong when compared against live network data. A P1 has been raised and a minimum daily refresh cadence proposed.",
+
+  "report_types": [
+    { "name": "Country Reports — Trade & Investment", "passed": 10, "failed": 0, "note": "100%" },
+    { "name": "Trade in Services",                    "passed": 9,  "failed": 1, "note": "90%" },
+    { "name": "CEPA Impact",                          "passed": 6,  "failed": 0, "note": "2 slides unverified" },
+    { "name": "Non-Oil",                              "passed": 2,  "failed": 0, "note": "100%" }
+  ],
+
+  "defect_callout": "<strong>Data accuracy and completeness together account for 59% of all defects.</strong> That concentration is the argument for automation: these are exactly the checks a machine performs identically across every country, and the ones manual sampling misses first.",
+
+  "defects": [
+    { "id": "MOFT-627", "category": "Performance",       "status": "closed",   "area": "CEPA page performance",            "finding": "Validated and closed" },
+    { "id": "MOFT-633", "category": "UI / formatting",   "status": "closed",   "area": "FDI summary cards",                "finding": "Validated and closed" },
+    { "id": "MOFT-574", "category": "Data accuracy",     "status": "closed",   "area": "FDI report totals",                "finding": "Validated and closed" },
+    { "id": "MOFT-589", "category": "UI / formatting",   "status": "closed",   "area": "CEPA PowerPoint cover",            "finding": "Validated and closed" },
+    { "id": "MOFT-590", "category": "Content / wording", "status": "closed",   "area": "CEPA PowerPoint narrative",        "finding": "Validated and closed" },
+    { "id": "MOFT-641", "category": "Data accuracy",     "status": "closed",   "area": "Small-country non-oil trade data", "finding": "Andorra slide 3 chart total and rounded headline consistent" },
+    { "id": "MOFT-642", "category": "Data accuracy",     "status": "closed",   "area": "UAE imports chart",                "finding": "Andorra import values generate correctly" },
+    { "id": "MOFT-645", "category": "Data completeness", "status": "closed",   "area": "Exports chart shows one product",  "finding": "Customs database holds only one 2025 export product; chart reflects available data" },
+    { "id": "MOFT-646", "category": "Data completeness", "status": "closed",   "area": "Multiple N/A badges",              "finding": "Fallback works; no N/A badges remain in checked output" },
+    { "id": "MOFT-647", "category": "Data accuracy",     "status": "closed",   "area": "Percentage increase/decrease",     "finding": "Calculation matches database. <strong>Closed, but client guidance still required</strong> on presenting extreme percentage values" },
+    { "id": "MOFT-703", "category": "Data completeness", "status": "closed",   "area": "Replace N/A with “New”",           "finding": "Regenerated Andorra report shows nine “New” labels, no N/A" },
+    { "id": "MOFT-709", "category": "Data accuracy",     "status": "open",     "area": "Armenia — Trade in Services",      "finding": "Urgent defect raised during validation", "severity": "urgent" },
+    { "id": "MOFT-704", "category": "Data accuracy",     "status": "open",     "area": "Rounding",                         "finding": "Rounding discrepancies on small re-export values" },
+    { "id": "MOFT-705", "category": "UI / formatting",   "status": "open",     "area": "Chart tooltip",                    "finding": "Andorra chart tooltip values differ from printed values" },
+    { "id": "MOFT-706", "category": "Data completeness", "status": "open",     "area": "CEPA N/A labels",                  "finding": "Raw N/A labels in CEPA reports; Türkiye contains seven" },
+    { "id": "MOFT-707", "category": "Content / wording", "status": "open",     "area": "Slide 6 wording",                  "finding": "Wording implies total unrealised potential, but the figure applies only to the listed products. Calculation matches client samples; the wording is the issue" },
+    { "id": "MOFT-631", "category": "UI / formatting",   "status": "reopened", "area": "Trade in Services year formatting", "finding": "Failed validation, returned for rework" }
+  ],
+
+  "sections": [
+    {
+      "title": "Testing strategy",
+      "lead": "Risk-based manual validation in this cycle, with automation being stood up in parallel. Three independent layers were applied to each report:",
+      "blocks": [
+        { "type": "table",
+          "headers": ["Layer", "What is checked", "Reference"],
+          "rows": [
+            ["<strong>Formatting &amp; UI</strong>", "Slide structure, labels, charts render, no raw <code>N/A</code> placeholders", "Client sample reports (SharePoint)"],
+            ["<strong>Data accuracy</strong>", "Report figures reconciled value by value", "Custom database SQL queries"],
+            ["<strong>External cross-check</strong>", "Published trade figures compared against independent sources", "WTO reference data, UNCTAD"],
+            ["<strong>Content review</strong>", "Narrative wording, interpretation, phrasing of derived figures", "Subject-matter review"]
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Scope and countries validated",
+      "lead": "Countries were selected to span distinct risk profiles rather than by volume.",
+      "blocks": [
+        { "type": "table",
+          "headers": ["Report type", "Instances", "Coverage"],
+          "rows": [
+            ["<strong>Country Reports</strong>", "10", "China, India, Switzerland, Saudi Arabia, Türkiye, Andorra, Antigua &amp; Barbuda, Bahamas, Barbados, St Kitts &amp; Nevis"],
+            ["<strong>CEPA Impact</strong>", "6", "Türkiye, India, Georgia, Australia, Mauritius, Indonesia"],
+            ["<strong>Trade in Services</strong>", "10", "China, Switzerland, Jordan, Armenia, India, Ireland, UK, Saudi Arabia, USA, Egypt"],
+            ["<strong>Non-Oil</strong>", "2", "2025, 2023 editions"]
+          ]
+        },
+        { "type": "heading", "text": "Rationale for country selection" },
+        { "type": "list", "items": [
+            "<strong>Large trading partners</strong> — high data volume; exercises aggregation, ranking and chart density at scale.",
+            "<strong>Small and micro economies</strong> — sparse data exposes rounding on small values, single-product charts, missing-data placeholders and extreme percentage swings. Most defects in this cycle came from this group.",
+            "<strong>CEPA signatory states</strong> — required for the CEPA report type.",
+            "<strong>Services-heavy economies</strong> — chosen for Trade in Services, where WTO and UNCTAD cross-checks are meaningful."
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Manual versus automated approach",
+      "blocks": [
+        { "type": "para", "text": "<strong>All validation in this period was manual.</strong> No automated regression coverage existed for the report types at the start of the cycle. This is stated plainly because it is the root cause of the defect escapes the client observed: with manual-only verification, coverage is limited to the sample a person can check in a day, and a fix in one country is not automatically re-verified across the others." },
+        { "type": "heading", "text": "Automation being stood up" },
+        { "type": "list", "items": [
+            "<strong>Scope of first suite</strong> — highest-risk data checks across all four report types: totals, percentages, year-on-year comparisons, chart values, and missing or unexpected data.",
+            "<strong>Daily scheduled regression</strong> with results pushed to Teams or email, so failures are visible the morning they occur rather than when the client finds them.",
+            "<strong>Dependency</strong> — coverage depends on receiving complete report data dumps by country and year, and on confirming the expected calculation rules."
+          ]
+        },
+        { "type": "callout", "text": "<strong>Reporting commitment.</strong> Automated coverage will be reported as checks actually executed, broken down by report type — not as a single percentage. Where a report type has no automated coverage, that will be stated rather than averaged away." }
+      ]
+    },
+    {
+      "title": "Environment and system constraints",
+      "lead": "These limited what could be validated in the period. Each is tracked.",
+      "blocks": [
+        { "type": "table",
+          "headers": ["Constraint", "Impact on testing", "Action"],
+          "rows": [
+            ["<strong>Database refresh not running as expected</strong>", "Client environment can serve figures that lag the source. Reports computed correctly from stale inputs appear wrong against live network data.", "<span class=\"tag t-fail\">P1 raised</span> Minimum daily refresh proposed"],
+            ["<strong>Report generation API not available to QA</strong>", "The API collection supplied covers the AI agent, not report generation. API-level automation cannot begin until the correct collection is provided.", "Requested"],
+            ["<strong>CEPA source queries unavailable</strong>", "CEPA data accuracy could not initially be reconciled. Extracting the logic from application code was assessed as too slow to be practical.", "Partially received"],
+            ["<strong>CEPA slides 2 and 15 — no source tables</strong>", "Partner-country and signing-date data, and business licence and investment data, remain <strong>unverified</strong>.", "Source tables requested"],
+            ["<strong>Report data dumps not received</strong>", "Prevents comparison at scale. Countries and periods outside the manual sample are untested.", "Requested"],
+            ["<strong>Reference source divergence</strong>", "WTO and UNCTAD publish differing values for the same measures, producing variances that are not product defects.", "Authoritative source to be agreed"],
+            ["<strong>Client presentation guidance pending</strong>", "Extreme percentage values calculate correctly but have no agreed display convention, so “correct” cannot be defined for test purposes.", "Client decision required"]
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Data validation methodology and limitations",
+      "blocks": [
+        { "type": "heading", "text": "Method" },
+        { "type": "list", "items": [
+            "Each report is generated through the product, exactly as the client would generate it.",
+            "Figures are extracted and reconciled against custom SQL run directly on the source database.",
+            "For Trade in Services, values are additionally cross-checked against published WTO data.",
+            "Formatting is compared slide by slide against the client-provided sample reports.",
+            "Narrative content is reviewed separately by a subject-matter reviewer."
+          ]
+        },
+        { "type": "heading", "text": "Limitations to state plainly" },
+        { "type": "list", "items": [
+            "<strong>Sample-based, not exhaustive.</strong> The product can generate reports for far more countries and periods than were tested.",
+            "<strong>Reconciliation is only as authoritative as the query.</strong> Where QA wrote the comparison SQL, a shared misunderstanding of the business rule would pass validation on both sides.",
+            "<strong>CEPA slides 2 and 15 carry no data validation at all</strong> — formatting only.",
+            "<strong>Point-in-time.</strong> Validation reflects the data present at execution."
+          ]
+        }
+      ]
+    },
+    {
+      "title": "AI-related limitations and considerations",
+      "lead": "Characteristics of the approach, not defects to be fixed one by one.",
+      "blocks": [
+        { "type": "list", "items": [
+            "<strong>Wording is not deterministic.</strong> The same inputs can produce differently worded narrative between generations. A fix verified in one generated report is not automatically present in the next.",
+            "<strong>House style is not guaranteed.</strong> Generated text may not match the phrasing conventions the client uses in their own publications.",
+            "<strong>Interpretation of derived figures.</strong> A correctly calculated value can be described in a way that overstates its scope.",
+            "<strong>Intermittency complicates verification.</strong> Non-deterministic output means an issue that cannot be reproduced on retest has not necessarily been fixed."
+          ]
+        },
+        { "type": "callout", "variant": "risk", "text": "<strong>Recommendation.</strong> Narrative sections that must carry exact, auditable wording should be driven by templates with data substitution rather than free generation." }
+      ]
+    },
+    {
+      "title": "Risks, lessons learned and recommendations",
+      "blocks": [
+        { "type": "heading", "text": "What went wrong" },
+        { "type": "list", "items": [
+            "<strong>Fixes were released without regression coverage.</strong> Verifying a fix in one country said nothing about the others. The client found the gap before we did.",
+            "<strong>Stale data was read as report defects.</strong> Diagnostic effort went to report logic that was not at fault.",
+            "<strong>Validation was blocked on inputs owned by others</strong> — source queries, data dumps, the report API."
+          ]
+        },
+        { "type": "heading", "text": "Recommendations" },
+        { "type": "table",
+          "headers": ["#", "Action", "Owner", "Timing"],
+          "rows": [
+            ["1", "Fix the database refresh; minimum daily cadence with monitoring and alerting on failure", "Backend", "Immediate (P1)"],
+            ["2", "Provide the report generation API collection", "Tech", "Immediate"],
+            ["3", "Deliver report data dumps by country and year; confirm expected calculation rules", "Data", "This week"],
+            ["4", "Complete the first regression suite across all four report types", "QA", "This week"],
+            ["5", "Daily scheduled regression with results pushed to Teams or email", "QA", "With suite"],
+            ["6", "Release control: MR verification on dev → release notes → branch strategy → CI/CD", "Engineering", "Next cycle"],
+            ["7", "Incident handling: hotfix policy and documented rollback procedure", "Engineering", "Next cycle"],
+            ["8", "Client decisions on extreme percentage display and authoritative source per measure", "PM", "This week"],
+            ["9", "Test summary included with every major release", "QA", "From next release"]
+          ]
+        },
+        { "type": "callout", "variant": "risk", "text": "<strong>Residual risk if items 1–3 remain open.</strong> Automation cannot reach meaningful coverage without the API collection and the data dumps, and no amount of testing compensates for a stale database in the client environment." }
+      ]
+    }
+  ]
+}

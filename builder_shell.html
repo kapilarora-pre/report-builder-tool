@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Test Report Builder — Presight</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{color-scheme:dark;
+    --bg:#030712;--paper:#040817;--raised:#060c22;--line:#1e293b;
+    --ink:#fff;--ink-2:#cbd5e1;--ink-3:#94a3b8;
+    --brand:linear-gradient(120deg,#6ec56a 0%,#00a08a 34%,#0a85e0 68%,#4f6bf0 100%);
+    --accent:#0a85e0;--ok:#34d399;--bad:#fb7185;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --display:'Space Grotesk',sans-serif;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.55}
+  .top{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+  .top h1{font-family:var(--display);font-size:15px;font-weight:600;margin:0}
+  .top .sp{flex:1}
+  .bar{height:3px;background:var(--brand)}
+  button{font-family:inherit;font-size:13px;border-radius:8px;border:1px solid var(--line);background:var(--raised);color:var(--ink-2);padding:7px 14px;cursor:pointer}
+  button:hover{border-color:#334155;color:var(--ink)}
+  button.primary{background:var(--brand);border:0;color:#fff;font-weight:600;padding:8px 18px}
+  label.file{display:inline-block}
+  label.file input{display:none}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;height:calc(100vh - 62px)}
+  @media(max-width:1100px){.wrap{grid-template-columns:1fr;height:auto}}
+  .panel{overflow-y:auto;padding:20px 22px 60px}
+  .panel.right{border-left:1px solid var(--line);background:#01030a;padding:0}
+  h2{font-family:var(--display);font-size:13px;font-weight:600;margin:26px 0 10px;display:flex;align-items:center;gap:9px;letter-spacing:.01em}
+  h2:first-child{margin-top:0}
+  h2::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--brand)}
+  h2 button{margin-left:auto;padding:4px 11px;font-size:12px}
+  .stats{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+  .st{border:1px solid var(--line);border-radius:9px;padding:8px 13px;background:var(--raised);min-width:84px}
+  .st b{display:block;font-family:var(--display);font-size:1.15rem;font-weight:600;line-height:1.2}
+  .st span{font-size:10.5px;color:var(--ink-3)}
+  .st.ok b{color:var(--ok)} .st.bad b{color:var(--bad)}
+  #meta{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  @media(max-width:640px){#meta{grid-template-columns:1fr}}
+  label{display:block}
+  label span{display:block;font-size:11px;color:var(--ink-3);margin-bottom:3px}
+  input,select,textarea{width:100%;background:var(--raised);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:6px 9px;font-family:inherit;font-size:12.5px}
+  input:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent)}
+  input.n{width:68px;text-align:right;font-family:var(--mono)}
+  input.s{font-family:var(--mono);font-size:12px}
+  textarea{min-height:66px;resize:vertical;line-height:1.5}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 6px 6px 0}
+  td{padding:0 6px 6px 0;vertical-align:middle}
+  button.del{padding:2px 8px;font-size:15px;line-height:1;color:var(--ink-3);background:transparent;border-color:transparent}
+  button.del:hover{color:var(--bad);border-color:var(--line)}
+  .hint{font-size:11.5px;color:var(--ink-3);margin:-4px 0 9px}
+  iframe{width:100%;height:100%;border:0;background:#030712}
+  @media(max-width:1100px){iframe{height:85vh}}
+</style>
+</head>
+<body>
+  <div class="top">
+    <h1>Test Report Builder</h1>
+    <div class="stats">
+      <div class="st"><b id="stat-total">0</b><span>instances</span></div>
+      <div class="st ok"><b id="stat-passed">0</b><span>passed</span></div>
+      <div class="st"><b id="stat-rate">0%</b><span>pass rate</span></div>
+      <div class="st"><b id="stat-defects">0</b><span>defects</span></div>
+      <div class="st bad"><b id="stat-open">0</b><span>open</span></div>
+    </div>
+    <div class="sp"></div>
+    <label class="file"><input type="file" id="import-json" accept=".json" /><button onclick="this.parentNode.querySelector('input').click()">Load data</button></label>
+    <button id="export-json">Save data</button>
+    <button id="reset">Reset</button>
+    <button class="primary" id="download">Download report</button>
+  </div>
+  <div class="bar"></div>
+
+  <div class="wrap">
+    <div class="panel">
+      <h2>Report details</h2>
+      <div id="meta"></div>
+
+      <h2>Coverage by area <button id="add-type">+ Add row</button></h2>
+      <p class="hint">Pass rate and the coverage bars are calculated from these numbers.</p>
+      <table>
+        <thead><tr><th>Area / report type</th><th>Passed</th><th>Failed</th><th>Note</th><th></th></tr></thead>
+        <tbody id="types"></tbody>
+      </table>
+
+      <h2>Defects <button id="add-defect">+ Add row</button></h2>
+      <p class="hint">Both pie charts, the open count and the two tables all come from this list. Tick “urgent” to highlight a row.</p>
+      <table>
+        <thead><tr><th>ID</th><th>Category</th><th>Status</th><th>Area</th><th>Finding</th><th>Urgent</th><th></th></tr></thead>
+        <tbody id="defects"></tbody>
+      </table>
+      <datalist id="cats">
+        <option>Data accuracy</option><option>Data completeness</option>
+        <option>UI / formatting</option><option>Content / wording</option>
+        <option>Performance</option><option>Security</option>
+      </datalist>
+
+      <h2>Highlighted notes</h2>
+      <p class="hint">Shown as coloured callouts. Leave blank to omit. Inline HTML such as &lt;strong&gt; works.</p>
+      <label><span>Under the executive summary</span><textarea id="callout-summary"></textarea></label>
+      <label style="margin-top:9px"><span>Under the defect charts</span><textarea id="callout-defect"></textarea></label>
+
+      <h2>Narrative sections</h2>
+      <p class="hint">Strategy, constraints, methodology and recommendations are carried over from the loaded data and appear in the preview. To change their wording, use “Save data”, edit the JSON, then “Load data”.</p>
+    </div>
+
+    <div class="panel right"><iframe id="preview" title="Report preview"></iframe></div>
+  </div>
+
+<script>const PAYLOAD = __PAYLOAD__;</script>
+<script>__APP__</script>
+</body>
+</html>
