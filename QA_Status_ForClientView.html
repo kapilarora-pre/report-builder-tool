@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QA Status For Client View</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    color-scheme: light;
+    --bg:#f4f7fb; --paper:#ffffff; --raised:#f1f5f9; --line:#dbe5ef;
+    --ink:#0f172a; --ink-2:#334155; --ink-3:#64748b;
+    --g-green:#6ec56a; --g-teal:#00a08a; --g-cyan:#0a85e0; --g-blue:#4f6bf0;
+    --brand:linear-gradient(120deg,var(--g-green) 0%,var(--g-teal) 34%,var(--g-cyan) 68%,var(--g-blue) 100%);
+    --pass:#059669; --warn:#b45309; --fail:#e11d48;
+    --pass-bg:rgb(16 185 129 / .12); --warn-bg:rgb(245 158 11 / .14); --fail-bg:rgb(225 29 72 / .10);
+    --shadow:0 10px 28px rgb(15 23 42 / .08);
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --display:'Space Grotesk','Plus Jakarta Sans',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 600px at 78% -8%, rgb(56 189 248 / .14), transparent 62%),
+      radial-gradient(800px 500px at 8% 4%, rgb(99 102 241 / .10), transparent 60%),
+      var(--bg);
+    background-attachment:fixed;}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px 80px}
+  .masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:38px 0 18px}
+  .doc-type{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);text-align:right}
+  .rule{height:3px;border-radius:2px;background:var(--brand)}
+  header.title{padding:28px 0 26px}
+  h1{font-family:var(--display);font-size:clamp(1.5rem,3.6vw,2.1rem);font-weight:600;line-height:1.2;letter-spacing:-.015em;margin:0 0 12px}
+  .meta{display:flex;flex-wrap:wrap;gap:5px 20px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .meta b{color:var(--ink-2);font-weight:500}
+  h2{font-family:var(--display);font-size:1.05rem;font-weight:600;margin:0 0 4px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
+  h2::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--brand);flex:none}
+  h3{font-family:var(--display);font-size:.92rem;font-weight:600;margin:22px 0 8px}
+  section{margin-top:30px}
+  .lead{margin:6px 0 14px 14px;color:var(--ink-3);font-size:13px;min-height:22px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);padding:20px 22px}
+  .card+.card{margin-top:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2);min-height:38px}
+  tr:last-child td{border-bottom:0}
+  td strong{color:var(--ink)}
+  td.num{font-family:var(--mono);white-space:nowrap;color:var(--ink)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.06em;padding:2px 8px;border-radius:999px;white-space:nowrap;background:var(--raised);color:var(--ink-3);min-width:72px;min-height:22px}
+  .t-pass{background:var(--pass-bg);color:var(--pass)} .t-warn{background:var(--warn-bg);color:var(--warn)} .t-fail{background:var(--fail-bg);color:var(--fail)}
+  .headline{display:grid;grid-template-columns:185px 1fr;gap:28px;align-items:center}
+  @media (max-width:720px){.headline{grid-template-columns:1fr;justify-items:center;text-align:center}}
+  .gauge{position:relative;width:170px;height:170px;margin:0}
+  .gauge figcaption{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:3px}
+  .gauge .pct{font-family:var(--display);font-size:1.9rem;font-weight:600;letter-spacing:-.03em;line-height:1;min-height:36px}
+  .gauge .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+  @media (max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{border:1px solid var(--line);border-radius:11px;padding:13px 15px;background:var(--raised)}
+  .stat .n{font-family:var(--display);font-size:1.45rem;font-weight:600;line-height:1.15;letter-spacing:-.03em;min-height:30px}
+  .stat .k{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:720px){.charts{grid-template-columns:1fr}}
+  .bars{display:grid;gap:14px;margin-top:4px}
+  .bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+  .bar-name{font-size:13.5px;font-weight:500;color:var(--ink-2)}
+  .bar-fig{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+  .track{height:9px;border-radius:999px;background:var(--line);overflow:hidden;display:flex}
+  ul.read{margin:8px 0 0;padding-left:19px}
+  ul.read li{margin-bottom:7px;font-size:13.5px;color:var(--ink-2);min-height:24px}
+  ul.read li strong{color:var(--ink);font-weight:600}
+  .callout{border-left:3px solid var(--g-cyan);background:rgb(10 133 224 / .08);padding:13px 16px;border-radius:0 9px 9px 0;margin-top:12px;font-size:13.5px;color:var(--ink-2);min-height:48px}
+  .callout.risk{border-left-color:var(--fail);background:rgb(225 29 72 / .08)}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div></div>
+    <div class="doc-type">Quality Assurance · Client View</div>
+  </div>
+  <div class="rule"></div>
+
+  <header class="title">
+    <h1>QA Status — Client View</h1>
+    <div class="meta">
+      <span>Project: <b></b></span>
+      <span>Period: <b></b></span>
+      <span>Environment: <b></b></span>
+      <span>Prepared by: <b></b></span>
+      <span>Status: <b></b></span>
+    </div>
+  </header>
+
+  <section>
+    <h2>1. Executive summary</h2>
+    <p class="lead"></p>
+    <div class="card headline">
+      <figure class="gauge">
+        <svg viewBox="0 0 120 120" width="170" height="170" role="img" aria-label="Pass rate">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="13" />
+        </svg>
+        <figcaption><span class="pct"></span><span class="lbl">Pass rate</span></figcaption>
+      </figure>
+      <div class="stats">
+        <div class="stat"><div class="n"></div><div class="k">Instances validated</div></div>
+        <div class="stat ok"><div class="n"></div><div class="k">Passed</div></div>
+        <div class="stat bad"><div class="n"></div><div class="k">Failed / defects</div></div>
+        <div class="stat mid"><div class="n"></div><div class="k">Open items</div></div>
+      </div>
+    </div>
+    <div class="callout"></div>
+  </section>
+
+  <section>
+    <h2>2. QA metrics</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Metric</th><th>Count</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>QA coverage</td><td></td><td></td></tr>
+          <tr><td>Passed</td><td></td><td></td></tr>
+          <tr><td>Failed / returned for rework</td><td></td><td></td></tr>
+          <tr><td>New bugs raised</td><td></td><td></td></tr>
+          <tr><td>Closed / verified</td><td></td><td></td></tr>
+          <tr><td>Open / pending</td><td></td><td></td></tr>
+          <tr><td>Primary risk</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Coverage summary</h2>
+    <p class="lead"></p>
+    <div class="card">
+      <table>
+        <thead><tr><th>Date / period</th><th>Area</th><th>Coverage</th><th>Result / note</th></tr></thead>
+        <tbody>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Ticket status summary</h2>
+    <p class="lead"></p>
+    <div class="charts">
+      <div class="card">
+        <h3>By outcome</h3>
+        <table>
+          <thead><tr><th>Status</th><th>Count</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Closed / passed</td><td></td><td></td></tr>
+            <tr><td>In review</td><td></td><td></td></tr>
+            <tr><td>In progress</td><td></td><td></td></tr>
+            <tr><td>Backlog / Todo</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>By category</h3>
+        <table>
+          <thead><tr><th>Category</th><th>Count</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Data accuracy</td><td></td><td></td></tr>
+            <tr><td>Data completeness</td><td></td><td></td></tr>
+            <tr><td>UI / formatting</td><td></td><td></td></tr>
+            <tr><td>Other</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Linear status and latest comment summary</h2>
+    <p class="lead"></p>
+    <div class="card">
+      <table>
+        <thead><tr><th>Issue</th><th>Current Linear status</th><th>QA result</th><th>Latest relevant comment / decision</th></tr></thead>
+        <tbody>
+          <tr><td></td><td></td><td><span class="tag"></span></td><td></td></tr>
+          <tr><td></td><td></td><td><span class="tag"></span></td><td></td></tr>
+          <tr><td></td><td></td><td><span class="tag"></span></td><td></td></tr>
+          <tr><td></td><td></td><td><span class="tag"></span></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. Closed / passed items</h2>
+    <div class="card">
+      <ul class="read">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Open / rework-needed items</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Issue</th><th>Reason not closed</th><th>Next action</th></tr></thead>
+        <tbody>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. Risks / blockers</h2>
+    <p class="lead"></p>
+    <div class="card">
+      <ul class="read">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+      <div class="callout risk"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>9. Known reporting notes</h2>
+    <p class="lead"></p>
+    <div class="card">
+      <div class="callout"></div>
+      <ul class="read">
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>10. Recommended next actions</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Action</th><th>Owner</th><th>Priority</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td></td><td></td><td></td></tr>
+          <tr><td>2</td><td></td><td></td><td></td></tr>
+          <tr><td>3</td><td></td><td></td><td></td></tr>
+          <tr><td>4</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Compiled from QA validation, issue status, and latest visible comments</span>
+    <span>Presight — A G42 company</span>
+  </footer>
+
+</div>
+</body>
+</html>
