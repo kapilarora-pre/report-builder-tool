@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QA Summary Template</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f7fb;
+    --paper: #ffffff;
+    --raised: #f1f5f9;
+    --line: #dbe5ef;
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --ink-3: #64748b;
+    --brand: linear-gradient(120deg, #6ec56a 0%, #00a08a 34%, #0a85e0 68%, #4f6bf0 100%);
+    --accent: #0a85e0;
+    --ok: #059669;
+    --warn: #b45309;
+    --bad: #e11d48;
+    --bad-bg: #fff1f2;
+    --warn-bg: #fffbeb;
+    --info-bg: #eff6ff;
+    --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --display: 'Space Grotesk', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.58;
+  }
+  .bar { height: 5px; background: var(--brand); }
+  .page { max-width: 1160px; margin: 0 auto; padding: 28px 22px 44px; }
+  header, .metric, .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+  }
+  header {
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 18px 45px rgb(15 23 42 / 0.08);
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .eyebrow::before { content: ''; width: 34px; height: 3px; border-radius: 3px; background: var(--brand); }
+  h1, h2, h3 { font-family: var(--display); line-height: 1.16; margin: 0; }
+  h1 { font-size: clamp(2rem, 4vw, 3.35rem); max-width: 840px; letter-spacing: -0.04em; }
+  .subtitle { color: var(--ink-2); max-width: 850px; margin: 14px 0 0; font-size: 16px; }
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .meta div {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px 16px;
+  }
+  .label {
+    display: block;
+    color: var(--ink-3);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .value { display: block; min-height: 22px; margin-top: 4px; font-weight: 700; color: var(--ink); }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin: 22px 0;
+  }
+  .metric { padding: 18px; }
+  .metric strong { display: block; min-height: 34px; font-family: var(--display); font-size: 2.15rem; line-height: 1; letter-spacing: -0.03em; }
+  .metric span { display: block; margin-top: 6px; color: var(--ink-3); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  section { margin-top: 24px; }
+  section.spaced { margin-top: 42px; }
+  section > h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+  }
+  section > h2::before { content: ''; width: 5px; height: 22px; border-radius: 4px; background: var(--brand); }
+  .card { padding: 20px; box-shadow: 0 10px 26px rgb(15 23 42 / 0.04); }
+  .grid-2 { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .lead { min-height: 24px; margin: 0; color: var(--ink-2); font-size: 15px; }
+  .callout {
+    min-height: 52px;
+    border: 1px solid #bfdbfe;
+    background: var(--info-bg);
+    color: #1e3a8a;
+    border-radius: 16px;
+    padding: 15px 16px;
+    margin-top: 14px;
+    font-weight: 600;
+  }
+  .callout.risk { border-color: #fecdd3; background: var(--bad-bg); color: #9f1239; }
+  .callout.warn { border-color: #fde68a; background: var(--warn-bg); color: #92400e; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0 10px 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  td { vertical-align: top; min-height: 40px; padding: 13px 10px 13px 0; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    min-width: 70px;
+    min-height: 24px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: 800;
+    background: var(--raised);
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .list { margin: 0; padding-left: 19px; color: var(--ink-2); }
+  .list li { min-height: 24px; }
+  .list li + li { margin-top: 8px; }
+  .split-row { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .split-row:last-child { border-bottom: 0; }
+  .split-row b { min-width: 24px; font-family: var(--display); text-align: right; }
+  .footnote { color: var(--ink-3); font-size: 12px; margin: 22px 0 0; text-align: center; }
+  @media (max-width: 900px) {
+    .meta, .metrics, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    header { padding: 22px; }
+    .page { padding-inline: 16px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { max-width: none; padding: 0; }
+    header, .card, .metric { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="bar"></div>
+  <main class="page">
+    <header>
+      <div class="eyebrow">Quality Assurance · Daily Status</div>
+      <h1>QA Summary Report</h1>
+      <p class="subtitle"></p>
+      <div class="meta">
+        <div><span class="label">Project</span><span class="value"></span></div>
+        <div><span class="label">Date</span><span class="value"></span></div>
+        <div><span class="label">Area tested</span><span class="value"></span></div>
+        <div><span class="label">Prepared by</span><span class="value"></span></div>
+      </div>
+    </header>
+
+    <div class="metrics" aria-label="Daily QA metrics">
+      <div class="metric"><strong></strong><span>Bugs raised today</span></div>
+      <div class="metric"><strong></strong><span>Total open bugs</span></div>
+      <div class="metric"><strong></strong><span>Verified fixes</span></div>
+      <div class="metric"><strong></strong><span>Assignee group</span></div>
+    </div>
+
+    <section>
+      <h2>Executive summary</h2>
+      <div class="card">
+        <p class="lead"></p>
+        <div class="callout warn"></div>
+        <ul class="list" style="margin-top:14px">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Bugs raised / validated today</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Issue</th>
+              <th>Defect and impact</th>
+              <th>Status</th>
+              <th>Assignee</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td><span class="pill"></span></td>
+              <td></td>
+              <td><span class="pill"></span></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td><span class="pill"></span></td>
+              <td></td>
+              <td><span class="pill"></span></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td><span class="pill"></span></td>
+              <td></td>
+              <td><span class="pill"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Project view categories</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Total open ticket category</h3>
+          <div class="split-row"><span>Open bugs overall</span><b></b></div>
+          <div class="split-row"><span>Awaiting tech-team fixes</span><b></b></div>
+          <div class="split-row"><span>In Review for QA validation</span><b></b></div>
+          <div class="split-row"><span>New bugs raised today</span><b></b></div>
+        </div>
+        <div class="card">
+          <h3>Status category</h3>
+          <div class="split-row"><span>In Progress</span><b></b></div>
+          <div class="split-row"><span>Backlog</span><b></b></div>
+          <div class="split-row"><span>Todo</span><b></b></div>
+          <div class="split-row"><span>In Review</span><b></b></div>
+          <div class="split-row"><span>Done / Closed</span><b></b></div>
+        </div>
+        <div class="card">
+          <h3>Assignee category</h3>
+          <div class="split-row"><span>Assignee 1</span><b></b></div>
+          <div class="split-row"><span>Assignee 2</span><b></b></div>
+          <div class="split-row"><span>Unassigned</span><b></b></div>
+          <div class="split-row"><span>QA owner for validation</span><b></b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="spaced">
+      <h2>QA blockers and validation basis</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Blockers from QA</h3>
+          <div class="callout risk"></div>
+          <ul class="list" style="margin-top:14px">
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Discussion notes</h3>
+          <ul class="list">
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Issue links</h2>
+      <div class="card">
+        <ul class="list">
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+    </section>
+
+    <p class="footnote">QA Summary Report · Attach test scenarios/test cases when sharing the report.</p>
+  </main>
+</body>
+</html>
